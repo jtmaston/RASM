@@ -1,0 +1,8 @@
+NME MULSERV
+GHME
+SPD 1000
+ANGS 0 null null null -30 null
+ANGS -90 null null null 30 null
+GHME
+DEL 1000
+GOTO 4
