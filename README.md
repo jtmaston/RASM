@@ -88,7 +88,7 @@ I plan to also have support for variables, though this may be a bit more complex
 |ANGS    |        [ x ]      |          [ x ]         |
 |DEL     |        [ x ]      |          [ x ]         |
 |OFS     |        [ x ]      |         [ ]            |
-|NME     |        [ ]        |         [ ]            |
+|NME     |        [ x ]        |         [ x ]            |
 |SPD     |        [ x ]      |          [ x ]         |
 |GHME    |        [ x ]      |         [ x ]          |
 |SHME    |        [ x ]      |           [ ]          |
@@ -115,12 +115,12 @@ I plan to also have support for variables, though this may be a bit more complex
 ## Variables
 | OPCODE | Assembler support | Interpreter support |
 |--------|-------------------|---------------------|
-| #      |        [ ]        |         [ ]         |
+| #      |        [ x ]        |         [ x ]         |
 | @      |        [ ]        |         [ ]         |
-| PRT    |        [ ]        |         [ ]         |
-| ADD    |        [ ]        |         [ ]         |
-| SUB    |        [ ]        |         [ ]         |
-| DIV    |        [ ]        |         [ ]         |
-| FDIV   |        [ ]        |         [ ]         |
-| SQRT   |        [ ]        |         [ ]         |
-| TRNC   |        [ ]        |         [ ]         |
+| PRT    |        [ x ]        |         [ x ]         |
+| ADD    |        [ x ]        |         [ x ]         |
+| SUB    |        [ x ]        |         [ x ]         |
+| DIV    |        [ x ]        |         [ x ]         |
+| FDIV   |        [ x ]        |         [ x ]         |
+| SQRT   |        [ x ]        |         [ x ]         |
+| TRNC   |        [ x ]        |         [ x ]         |
