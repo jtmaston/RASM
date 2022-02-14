@@ -25,4 +25,8 @@
 #define G  3
 #define EQ 4
 
+#define NUMERIC 17
+#define STRING 18
+#define ADD    19
+
 //#define instr program[program_counter].params
