@@ -1,0 +1,5 @@
+NME VARIABLE
+# num1 32
+# num2 129
+ADD num3 num1 num 2
+END

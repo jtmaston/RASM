@@ -7,7 +7,7 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
 # OPCODES
  This section summarizes the opcodes used, and how to use them. As more are implemented, this list will expand. So far, the main target is the DOFBot platform, the code will therefore be prioritizing instructions for a 5-DOF articulated arm.
  Parameters marked with [ ] are optional.
- ## List of opcodes:
+## List of opcodes:
     * ANG param [ time ]
         - Opcode 0, accepts 2 parameters
         - Sets single servo to specified angle
@@ -54,3 +54,73 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Same as IF, however truth condition is inverted
     * ABR
         - Abort, cuts power to the servos
+
+# Variables
+I plan to also have support for variables, though this may be a bit more complex
+## Variable Opcodes
+    * # param1 param2
+        - declare a variable of name param1 with numeric value param2
+        - NOTE: please note the space between # and the variable name
+    * @ param1 param2
+        - declare variable of the name param1 with string value param2
+        - NOTE: strings are declared read-only
+    * PRT param1
+        - print param1 to the debug console
+    * ADD param1 param2 param3
+        - puts param2 + param3 into param1
+    * SUB
+        - puts param2 - param3 into param1
+    * DIV
+        - puts param2 / param3 into param1, truncating decimals
+    * FDIV
+        - puts param2 / param3 into param1, keeping decimal precision
+    * SQRT prarm1, param2
+        - puts sqrt( param2 ) into param2
+    * TRNC param1
+        - discards decimals of param1
+
+# Implementation progress
+## Main opcodes
+
+| OPCODE | Assembler support |   Interpreter support  |
+|--------|-------------------|------------------------|
+|ANG     |        [ x ]      |          [ x ]         |
+|ANGS    |        [ x ]      |          [ x ]         |
+|DEL     |        [ x ]      |          [ x ]         |
+|OFS     |        [ x ]      |         [ ]            |
+|NME     |        [ ]        |         [ ]            |
+|SPD     |        [ x ]      |          [ x ]         |
+|GHME    |        [ x ]      |         [ x ]          |
+|SHME    |        [ x ]      |           [ ]          |
+|INC     |        [ x ]      |           [ x ]        |
+|DEC     |        [ x ]      |           [ x ]        |
+|RPP     |        [ ]        |         [ ]            |
+|IPP     |        [ ]        |         [ ]            |
+|END     |        [ x ]      |           [ ]          |
+|GOTO    |        [ x ]      |           [ x ]        |
+|IF      |        [ ]        |            [ ]         |
+|IFN     |        [ ]        |            [ ]         |
+|ABR     |        [ ]        |            [ ]         |
+
+## Logic
+
+| OPCODE | Assembler support | Interpreter support |
+|--------|-------------------|---------------------|
+|LE      |        [ ]        |         [ ]         |
+|L       |        [ ]        |         [ ]         |
+|GE      |        [ ]        |         [ ]         |
+|G       |        [ ]        |         [ ]         |
+|EQ      |        [ ]        |         [ ]         |
+
+## Variables
+| OPCODE | Assembler support | Interpreter support |
+|--------|-------------------|---------------------|
+| #      |        [ ]        |         [ ]         |
+| @      |        [ ]        |         [ ]         |
+| PRT    |        [ ]        |         [ ]         |
+| ADD    |        [ ]        |         [ ]         |
+| SUB    |        [ ]        |         [ ]         |
+| DIV    |        [ ]        |         [ ]         |
+| FDIV   |        [ ]        |         [ ]         |
+| SQRT   |        [ ]        |         [ ]         |
+| TRNC   |        [ ]        |         [ ]         |
