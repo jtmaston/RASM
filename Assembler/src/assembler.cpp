@@ -32,7 +32,14 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"ABR", 16},
         {"#", 17},
         {"@", 18},
-        {"ADD", 19}};
+        {"ADD", 19},
+        { "PRT", 20},
+        { "SUB", 21},
+        { "DIV", 22},
+        { "FDIV", 23},
+        { "SQRT", 24},
+        { "TRNC", 25}
+    };
 
 class Word : public std::string
 {
@@ -117,6 +124,9 @@ int main(int argc, char **argv)
                 }
 
                 case ADD:
+                case SUB:
+                case DIV:
+                case FDIV:
                 {
                     variable::Numeric v;
                     if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
@@ -152,6 +162,25 @@ int main(int argc, char **argv)
 
                     break;
                 }
+                
+                case SQRT:
+                case TRNC:
+                {
+
+                    if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                    {
+                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                         << "Use of undeclared variable for input. \n";
+                        continue;
+                    }
+
+                    if ( !fail )
+                    {
+                        local.params[0] = numeric_hashtable[loc_args[1]];
+                    }
+
+                    break;
+                }
 
                 default:
                 {
@@ -171,7 +200,13 @@ int main(int argc, char **argv)
                         if (arg == "null")
                             local.params[i++] = -200;
                         else
-                            local.params[i++] = std::stoi(arg);
+                            try{
+                                local.params[i++] = std::stoi(arg);
+                            }catch(std::exception E)
+                            {
+                                local.params[i++] = numeric_hashtable[arg];
+                            }
+                            
                     }
                 }
             }
@@ -186,7 +221,7 @@ int main(int argc, char **argv)
 
         output_file << progname << ' ';
 
-        size_t progsize = instructions.size() * sizeof(Instruction) + progname.size() * sizeof(char);
+        size_t progsize = instructions.size() * sizeof(Instruction);
         size_t numsize = numeric_space.size() * sizeof(variable::Numeric);
         size_t strsize = 0;
 

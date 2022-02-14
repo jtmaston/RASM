@@ -26,7 +26,11 @@
 #define EQ 4
 
 #define NUMERIC 17
-#define STRING 18
-#define ADD    19
-
-//#define instr program[program_counter].params
+#define STRING  18
+#define ADD     19
+#define PRT     20
+#define SUB     21
+#define DIV     22
+#define FDIV    23
+#define SQRT    24
+#define TRNC    25
