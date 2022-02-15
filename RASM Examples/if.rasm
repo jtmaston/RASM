@@ -1,12 +1,12 @@
 NME IF
-$ a 200
+$ a 500000
 $ b 0
 ADD b b #5
 PRT b
 IF b LE #25 GOTO 4
 PRT b
 $ b 0
-ADD b b #5
+ADD b b #1
 PRT b
 IF b LE a GOTO 9
 END
