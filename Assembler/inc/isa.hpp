@@ -19,12 +19,6 @@
 #define IFN 15
 #define ABR 16
 
-#define LE 0
-#define L  1
-#define GE 2
-#define G  3
-#define EQ 4
-
 #define NUMERIC 17
 #define STRING  18
 #define ADD     19
@@ -34,3 +28,9 @@
 #define FDIV    23
 #define SQRT    24
 #define TRNC    25
+
+#define LE 26
+#define L  27
+#define GE 28
+#define G  29
+#define EQ 30

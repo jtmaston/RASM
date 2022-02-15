@@ -30,16 +30,21 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"IF", 14},
         {"IFN", 15},
         {"ABR", 16},
-        {"#", 17},
+        {"$", 17},
         {"@", 18},
         {"ADD", 19},
-        { "PRT", 20},
-        { "SUB", 21},
-        { "DIV", 22},
-        { "FDIV", 23},
-        { "SQRT", 24},
-        { "TRNC", 25}
-    };
+        {"PRT", 20},
+        {"SUB", 21},
+        {"DIV", 22},
+        {"FDIV", 23},
+        {"SQRT", 24},
+        {"TRNC", 25},
+        {"LE", 26},
+        {"L", 27},
+        {"GE", 28},
+        {"G", 29}, 
+        {"EQ", 30}
+        };
 
 class Word : public std::string
 {
@@ -103,112 +108,203 @@ int main(int argc, char **argv)
 
             switch (local.opcode)
             {
-                case NUMERIC:
+            case IF:
+            {
+                variable::Numeric v;
+                if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
                 {
-                    variable::Numeric v;
-                    if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                    if (loc_args[1][0] == '#')
                     {
                         numeric_hashtable.insert({loc_args[1], numeric_hashtable.size()});
                         v.name = numeric_hashtable.size() - 1;
+                        v.value = std::stoi(loc_args[1].substr(1));
                         numeric_space.push_back(v);
-                        
                     }
                     else
                     {
-                        v = numeric_space.at(numeric_hashtable[loc_args[1]]);
-                    }
-
-                    local.params[0] = v.name;
-                    local.params[1] = std::stoi(loc_args[2]);
-                    break;
+                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Use of undeclared variable for comparison. \n";
+                        fail = true;
+                        continue;
+                    }                    
                 }
 
-                case ADD:
-                case SUB:
-                case DIV:
-                case FDIV:
+                if (human_readable_to_opcode.find(loc_args[2]) == human_readable_to_opcode.end())
                 {
-                    variable::Numeric v;
-                    if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Unknown operator used in comparison. \n";
+                    fail = true;
+                    continue;
+                }
+
+                if (numeric_hashtable.find(loc_args[3]) == numeric_hashtable.end())
+                {
+                    if (loc_args[3][0] == '#')
+                    {
+                        numeric_hashtable.insert({loc_args[3], numeric_hashtable.size()});
+                        v.name = numeric_hashtable.size() - 1;
+                        v.value = std::stoi(loc_args[3].substr(1));
+                        numeric_space.push_back(v);
+                    }
+                    else
+                    {
+                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Use of undeclared variable for comparison. \n";
+                        fail = true;
+                        continue;
+                    }                    
+                }
+
+                if (loc_args[4] != "GOTO")
+                {
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Missing GOTO designator!. \n";
+                    continue;
+                }
+
+                local.params[0] = numeric_hashtable[loc_args[1]];
+                local.params[1] = human_readable_to_opcode[loc_args[2]];
+                local.params[2] = numeric_hashtable[loc_args[3]];
+                local.params[3] = std::stoi(loc_args[5]);                   // TODO: verification for this
+                break;
+            }
+
+            case NUMERIC:
+            {
+                variable::Numeric v;
+                if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                {
+                    numeric_hashtable.insert({loc_args[1], numeric_hashtable.size()});
+                    v.name = numeric_hashtable.size() - 1;
+                    numeric_space.push_back(v);
+                }
+                else
+                {
+                    v = numeric_space.at(numeric_hashtable[loc_args[1]]);
+                }
+
+                local.params[0] = v.name;
+                local.params[1] = std::stoi(loc_args[2]);
+                break;
+            }
+
+            case ADD:
+            case SUB:
+            case DIV:
+            case FDIV:
+            {
+                variable::Numeric v;
+                if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                {
+                    if (loc_args[1][0] == '#')
+                    {
+                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                                  << "Cannot use constant as output for operation \n";
+                        fail = true;
+                    }
+                    else
                     {
                         std::cout << "rasm:\033[1;33m warning:\033[0m " << input_name << ": " << instruction_count << ": "
-                         << "Destination variable uninitialized, but written to. \n";
+                                  << "Destination variable uninitialized, but written to. \n";
                         numeric_hashtable.insert({loc_args[1], numeric_hashtable.size()});
                         v.name = numeric_hashtable.size() - 1;
                         numeric_space.push_back(v);
                     }
+                }
 
-                    if (numeric_hashtable.find(loc_args[2]) == numeric_hashtable.end())
+                if (numeric_hashtable.find(loc_args[2]) == numeric_hashtable.end())
+                {
+                    if (loc_args[2][0] == '#')
                     {
-                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                         << "Use of undeclared variable for input. \n";
-                        continue;
+                        numeric_hashtable.insert({loc_args[2], numeric_hashtable.size()});
+                        v.name = numeric_hashtable.size() - 1;
+                        v.value = std::stoi(loc_args[2].substr(1));
+                        numeric_space.push_back(v);
                     }
-
-                    if (numeric_hashtable.find(loc_args[3]) == numeric_hashtable.end())
+                    else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                         << "Use of undeclared variable for input. \n";
+                              << "Use of undeclared variable for input. \n";
                         fail = true;
                         continue;
-                    }
-
-                    if ( !fail )
-                    {
-                        local.params[0] = numeric_hashtable[loc_args[1]];
-                        local.params[1] = numeric_hashtable[loc_args[2]];
-                        local.params[2] = numeric_hashtable[loc_args[3]];
-                    }
-
-                    break;
+                    }                    
                 }
-                
-                case SQRT:
-                case TRNC:
-                {
 
-                    if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                if (numeric_hashtable.find(loc_args[3]) == numeric_hashtable.end())
+                {
+                    if (loc_args[3][0] == '#')
+                    {
+                        numeric_hashtable.insert({loc_args[3], numeric_hashtable.size()});
+                        v.name = numeric_hashtable.size() - 1;
+                        v.value = std::stoi(loc_args[3].substr(1));
+                        numeric_space.push_back(v);
+                    }
+                    else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                         << "Use of undeclared variable for input. \n";
+                              << "Use of undeclared variable for input. \n";
+                        fail = true;
                         continue;
-                    }
-
-                    if ( !fail )
-                    {
-                        local.params[0] = numeric_hashtable[loc_args[1]];
-                    }
-
-                    break;
+                    }   
                 }
 
-                default:
+                if (!fail)
                 {
-                    int i = 0;
-
-                    if (loc_args[0] == "NME")
-                    {
-                        progname = loc_args[1];
-                        continue;
-                    }
-
-                    for (auto &arg : loc_args)
-                    {
-                        if (arg == loc_args[0])
-                            continue;
-
-                        if (arg == "null")
-                            local.params[i++] = -200;
-                        else
-                            try{
-                                local.params[i++] = std::stoi(arg);
-                            }catch(std::exception E)
-                            {
-                                local.params[i++] = numeric_hashtable[arg];
-                            }
-                            
-                    }
+                    local.params[0] = numeric_hashtable[loc_args[1]];
+                    local.params[1] = numeric_hashtable[loc_args[2]];
+                    local.params[2] = numeric_hashtable[loc_args[3]];
                 }
+
+                break;
+            }
+
+            case SQRT:
+            case TRNC:
+            {
+
+                if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
+                {
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Use of undeclared variable for input. \n";
+                    continue;
+                }
+
+                if (!fail)
+                {
+                    local.params[0] = numeric_hashtable[loc_args[1]];
+                }
+
+                break;
+            }
+
+            default:
+            {
+                int i = 0;
+
+                if (loc_args[0] == "NME")
+                {
+                    progname = loc_args[1];
+                    continue;
+                }
+
+                for (auto &arg : loc_args)
+                {
+                    if (arg == loc_args[0])
+                        continue;
+
+                    if (arg == "null")
+                        local.params[i++] = -200;
+                    else
+                        try
+                        {
+                            local.params[i++] = std::stoi(arg);
+                        }
+                        catch (std::exception E)
+                        {
+                            local.params[i++] = numeric_hashtable[arg];
+                        }
+                }
+            }
             }
             instructions.push_back(local);
         }

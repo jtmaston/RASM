@@ -46,10 +46,11 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Marks end of a program
     * GTO
         - GOTO instruction number, useful for loops
-    * IF param1 CONDITION param2 INSTRUCTION
+    * IF param1 CONDITION param2 GOTO param3
         - CONDITION is any of LE ( less or equal ), L ( less ), GE 
         ( greater or equal ), G ( greater ), EQ ( equal )
         - INSTRUCTION should be a reachable instruction number in the program
+        - GOTO *must* be present
     * IFN param1 CONDITION param2 INSTRUCTION
         - Same as IF, however truth condition is inverted
     * ABR
@@ -58,9 +59,14 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
 # Variables
 I plan to also have support for variables, though this may be a bit more complex
 ## Variable Opcodes
-    * # param1 param2
+    * $ param1 param2
         - declare a variable of name param1 with numeric value param2
-        - NOTE: please note the space between # and the variable name
+        - NOTE: please note the space between $ and the variable name
+    
+    * #param1
+        - use plain numeric value, without explicitly assigning a variable
+        - note THE LACK of space between # and the value
+
     * @ param1 param2
         - declare variable of the name param1 with string value param2
         - NOTE: strings are declared read-only
@@ -87,20 +93,20 @@ I plan to also have support for variables, though this may be a bit more complex
 |ANG     |        [ x ]      |          [ x ]         |
 |ANGS    |        [ x ]      |          [ x ]         |
 |DEL     |        [ x ]      |          [ x ]         |
-|OFS     |        [ x ]      |         [ ]            |
-|NME     |        [ x ]        |         [ x ]            |
+|OFS     |        [ x ]      |          [ ]           |
+|NME     |        [ x ]      |          [ x ]         |
 |SPD     |        [ x ]      |          [ x ]         |
-|GHME    |        [ x ]      |         [ x ]          |
-|SHME    |        [ x ]      |           [ ]          |
-|INC     |        [ x ]      |           [ x ]        |
-|DEC     |        [ x ]      |           [ x ]        |
-|RPP     |        [ ]        |         [ ]            |
-|IPP     |        [ ]        |         [ ]            |
-|END     |        [ x ]      |           [ ]          |
-|GOTO    |        [ x ]      |           [ x ]        |
-|IF      |        [ ]        |            [ ]         |
-|IFN     |        [ ]        |            [ ]         |
-|ABR     |        [ ]        |            [ ]         |
+|GHME    |        [ x ]      |          [ x ]         |
+|SHME    |        [ x ]      |          [ ]           |
+|INC     |        [ x ]      |          [ x ]         |
+|DEC     |        [ x ]      |          [ x ]         |
+|RPP     |        [ ]        |          [ ]           |
+|IPP     |        [ ]        |          [ ]           |
+|END     |        [ x ]      |          [ ]           |
+|GOTO    |        [ x ]      |          [ x ]         |
+|IF      |        [ ]        |          [ ]           |
+|IFN     |        [ ]        |          [ ]           |
+|ABR     |        [ ]        |          [ ]           |
 
 ## Logic
 
@@ -116,7 +122,7 @@ I plan to also have support for variables, though this may be a bit more complex
 | OPCODE | Assembler support | Interpreter support |
 |--------|-------------------|---------------------|
 | #      |        [ x ]        |         [ x ]         |
-| @      |        [ ]        |         [ ]         |
+| @      |        [ ]          |         [ ]           |
 | PRT    |        [ x ]        |         [ x ]         |
 | ADD    |        [ x ]        |         [ x ]         |
 | SUB    |        [ x ]        |         [ x ]         |

@@ -1,8 +1,8 @@
 NME VARIABLE
-# num1 50
-# num2 100
+$ num1 50
+$ num2 100
 ADD num3 num1 num2
-# num2 50
+$ num2 50
 SUB num3 num3 num2
 SQRT num3
 PRT num3
