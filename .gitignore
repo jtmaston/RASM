@@ -35,3 +35,4 @@
 rasm
 *.bin
 test_load
+build
