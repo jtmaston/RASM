@@ -24,8 +24,8 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"SHME", 7},
         {"INC", 8},
         {"DEC", 9},
-        {"RPP", 10},
-        {"IPP", 11},
+        {"MVA", 10},
+        {"MVL", 11},
         {"END", 12},
         {"GOTO", 13},
         {"IF", 14},
@@ -45,6 +45,7 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"GE", 28},
         {"G", 29}, 
         {"EQ", 30},
+        {"ORNT", 31},
         {"//", 1000}
         };
 
@@ -66,8 +67,8 @@ int main(int argc, char **argv)
         std::cout << "rasm:\033[1;31m fatal error:\033[0m no input files \n";
         return 0;
     }*/
-    argv[1] = new char[100];
-    strcpy(argv[1], "../Rasm Examples/if.rasm");
+    //argv[1] = new char[100];
+    //strcpy(argv[1], "../Rasm Examples/if.rasm");
     std::vector<variable::Numeric> numeric_space;
     std::vector<variable::String> string_space;
 
@@ -358,6 +359,6 @@ int main(int argc, char **argv)
         output_file.close();
     }
 
-    delete argv[1];
+    //delete argv[1];
     return 0;
 }
