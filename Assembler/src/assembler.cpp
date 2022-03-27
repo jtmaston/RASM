@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <regex>
 
 // TODO: syntax checking
 // TODO: basically everything :)
@@ -43,7 +44,8 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"L", 27},
         {"GE", 28},
         {"G", 29}, 
-        {"EQ", 30}
+        {"EQ", 30},
+        {"//", 1000}
         };
 
 class Word : public std::string
@@ -59,16 +61,18 @@ std::istream &operator>>(std::istream &is, Word &output)
 int main(int argc, char **argv)
 {
 
-    if (argc == 1)
+    /*if (argc == 1)
     {
         std::cout << "rasm:\033[1;31m fatal error:\033[0m no input files \n";
         return 0;
-    }
-
+    }*/
+    argv[1] = new char[100];
+    strcpy(argv[1], "../Rasm Examples/if.rasm");
     std::vector<variable::Numeric> numeric_space;
     std::vector<variable::String> string_space;
 
     std::ifstream input_file(argv[1]);
+    //std::ifstream input_file ("../Rasm Examples/if.rasm");
 
     std::vector<Instruction> instructions;
     std::string output_file_name(argv[1]);
@@ -89,11 +93,14 @@ int main(int argc, char **argv)
         instruction_count++;
         Instruction local;
 
+        line = line.substr(0, line.find("//"));
+        line = std::regex_replace(line, std::regex("^ +| +$|( ) +"), "$1");
+
         std::istringstream ss(line);
         std::vector<std::string> loc_args((std::istream_iterator<Word>(ss)),
                                           std::istream_iterator<Word>());
 
-        if (line == "" || line == " " || line == "\t" || line == "\n")
+        if (line == "" || line == " " || line == "\t" || line == "\n" || line.length() == 0)
             continue;
 
         if (human_readable_to_opcode.find(loc_args[0]) == human_readable_to_opcode.end())
@@ -277,6 +284,10 @@ int main(int argc, char **argv)
                 break;
             }
 
+            case 1000:
+                continue;
+                break;
+
             default:
             {
                 int i = 0;
@@ -346,5 +357,7 @@ int main(int argc, char **argv)
 
         output_file.close();
     }
+
+    delete argv[1];
     return 0;
 }

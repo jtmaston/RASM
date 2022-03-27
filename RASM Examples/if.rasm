@@ -1,12 +1,14 @@
-NME IF
-$ a 500000
-$ b 0
-ADD b b #5
-PRT b
-IF b LE #25 GOTO 4
-PRT b
-$ b 0
-ADD b b #1
-PRT b
-IF b LE a GOTO 9
-END
+// This example program demonstrates the use of if statements in RASM.
+
+NME IF                  // set the name of the program
+$ a 500000              // define variable a with value 500000
+$ b 0                   // define variable b with value of 0
+ADD b b #5              // add 5 to b
+PRT b                   // print b to the debug console
+IF b LE #25 GOTO 4      // if b is less or equal to 25, goto instruction 4
+PRT b                   // print b to the debug console
+$ b 0                   // reinitialize b with value 0
+ADD b b #1              // increment b by 1
+PRT b                   // print b to the debug console
+IF b LE a GOTO 9        // if b is less or equal to a, go to instruction 9
+END                     // mark end of the program
