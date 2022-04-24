@@ -36,4 +36,3 @@ rasm
 *.bin
 test_load
 build
-.DS_Store

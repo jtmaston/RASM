@@ -11,8 +11,8 @@
 #define SHME 7
 #define INC 8
 #define DEC 9
-#define MVA 10
-#define MVL 11
+#define RPP 10
+#define IPP 11
 #define END 12
 #define GOTO 13
 #define IF 14
@@ -34,4 +34,3 @@
 #define GE 28
 #define G  29
 #define EQ 30
-#define ORNT 31
