@@ -7,43 +7,45 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
+#include <exception>
 
 // TODO: syntax checking
 // TODO: basically everything :)
 
 std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
     {
-        {"ANG", 0},
-        {"ANGS", 1},
-        {"DEL", 2},
-        {"OFS", 3},
-        {"NME", 4},
-        {"SPD", 5},
-        {"GHME", 6},
-        {"SHME", 7},
-        {"INC", 8},
-        {"DEC", 9},
-        {"RPP", 10},
-        {"IPP", 11},
-        {"END", 12},
-        {"GOTO", 13},
-        {"IF", 14},
-        {"IFN", 15},
-        {"ABR", 16},
-        {"$", 17},
-        {"@", 18},
-        {"ADD", 19},
-        {"PRT", 20},
-        {"SUB", 21},
-        {"DIV", 22},
-        {"FDIV", 23},
-        {"SQRT", 24},
-        {"TRNC", 25},
-        {"LE", 26},
-        {"L", 27},
-        {"GE", 28},
-        {"G", 29}, 
-        {"EQ", 30}
+        {"ANG", ANG},
+        {"ANGS", ANGS},
+        {"DEL", DEL},
+        {"OFS", OFS},
+        {"NME", NME},
+        {"SPD", SPD},
+        {"GHME", GHME},
+        {"SHME", SHME},
+        {"INC", INC},
+        {"DEC", DEC},
+        {"MOVJ", MOVJ},
+        {"MOVL", MOVL},
+        {"END", END},
+        {"GOTO", GOTO},
+        {"LABL", LABL},
+        {"IF", IF},
+        {"IFN", IFN},
+        {"ABR", ABR},
+        {"$", NUMERIC},
+        {"@", STRING},
+        {"ADD", ADD},
+        {"PRT", PRT},
+        {"SUB", SUB},
+        {"DIV", DIV},
+        {"FDIV", FDIV},
+        {"SQRT", SQRT},
+        {"TRNC", TRNC},
+        {"LE", LE},
+        {"L", L},
+        {"GE", GE},
+        {"G", G}, 
+        {"EQ", EQ}
         };
 
 class Word : public std::string
@@ -80,6 +82,7 @@ int main(int argc, char **argv)
     std::string input_name = progname + ".rasm";
 
     std::unordered_map<std::string, int> numeric_hashtable;
+    std::unordered_map<std::string, int> goto_hashtable;
 
     bool fail = false;
     int instruction_count = 0;
@@ -159,13 +162,22 @@ int main(int argc, char **argv)
                 {
                     std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
                               << "Missing GOTO designator!. \n";
+                    fail = true;
                     continue;
                 }
 
-                local.params[0] = numeric_hashtable[loc_args[1]];
-                local.params[1] = human_readable_to_opcode[loc_args[2]];
-                local.params[2] = numeric_hashtable[loc_args[3]];
-                local.params[3] = std::stoi(loc_args[5]);                   // TODO: verification for this
+                local.params[0] = numeric_hashtable.at(loc_args[1]);
+                local.params[1] = human_readable_to_opcode.at(loc_args[2]);
+                local.params[2] = numeric_hashtable.at(loc_args[3]);
+                //local.params[3] = std::stoi(loc_args[5]);                   // TODO: verification for this
+                try {
+                    local.params[3] = goto_hashtable.at(loc_args[5]);
+                }catch(std::exception E)
+                {
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Use of undeclared label " << loc_args[5] << '\n';
+                    fail = true;
+                }
                 break;
             }
 
@@ -180,12 +192,24 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                    v = numeric_space.at(numeric_hashtable[loc_args[1]]);
+                    v = numeric_space.at(numeric_hashtable.at(loc_args[1]));
                 }
 
                 local.params[0] = v.name;
                 local.params[1] = std::stoi(loc_args[2]);
                 break;
+            }
+
+            case LABL:
+            {
+                if (goto_hashtable.find(loc_args[1]) == goto_hashtable.end())
+                    goto_hashtable.insert({loc_args[1], instructions.size()});
+                else
+                {
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Duplicate GOTO label!. \n";
+                }
+                continue;
             }
 
             case ADD:
@@ -250,14 +274,13 @@ int main(int argc, char **argv)
 
                 if (!fail)
                 {
-                    local.params[0] = numeric_hashtable[loc_args[1]];
-                    local.params[1] = numeric_hashtable[loc_args[2]];
-                    local.params[2] = numeric_hashtable[loc_args[3]];
+                    local.params[0] = numeric_hashtable.at(loc_args[1]);
+                    local.params[1] = numeric_hashtable.at(loc_args[2]);
+                    local.params[2] = numeric_hashtable.at(loc_args[3]);
                 }
 
                 break;
             }
-
             case SQRT:
             case TRNC:
             {
@@ -271,12 +294,11 @@ int main(int argc, char **argv)
 
                 if (!fail)
                 {
-                    local.params[0] = numeric_hashtable[loc_args[1]];
+                    local.params[0] = numeric_hashtable.at(loc_args[1]);
                 }
 
                 break;
             }
-
             default:
             {
                 int i = 0;
@@ -286,7 +308,6 @@ int main(int argc, char **argv)
                     progname = loc_args[1];
                     continue;
                 }
-
                 for (auto &arg : loc_args)
                 {
                     if (arg == loc_args[0])
@@ -295,14 +316,19 @@ int main(int argc, char **argv)
                     if (arg == "null")
                         local.params[i++] = -200;
                     else
+                    {
+                        //std::cout << loc_args[0] << " ";
+                        //std::cout << arg << '\n';
                         try
                         {
                             local.params[i++] = std::stoi(arg);
                         }
                         catch (std::exception E)
                         {
-                            local.params[i++] = numeric_hashtable[arg];
+                            //std::cout << i << '\n';
+                            local.params[i++] = numeric_hashtable.at(arg);
                         }
+                    }
                 }
             }
             }

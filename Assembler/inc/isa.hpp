@@ -1,6 +1,5 @@
 #pragma once
 
-
 #define ANG 0
 #define ANGS 1
 #define DEL 2
@@ -11,10 +10,11 @@
 #define SHME 7
 #define INC 8
 #define DEC 9
-#define RPP 10
-#define IPP 11
+#define MOVJ 10
+#define MOVL 11
 #define END 12
 #define GOTO 13
+#define LABL 31
 #define IF 14
 #define IFN 15
 #define ABR 16
