@@ -6,4 +6,4 @@ $ num2 50
 SUB num3 num3 num2
 SQRT num3
 PRT num3
-END
+END%

@@ -4,5 +4,5 @@
 
 struct Instruction{
     uint8_t opcode;
-    int32_t params[10];
+    float params[10];
 };

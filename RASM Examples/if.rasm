@@ -1,12 +1,16 @@
 NME IF
 $ a 500000
 $ b 0
+
+LABL loop1
 ADD b b #5
 PRT b
-IF b LE #25 GOTO 4
-PRT b
+IF b LE #25 GOTO loop1
+
 $ b 0
+
+LABL loop2
 ADD b b #1
 PRT b
-IF b LE a GOTO 9
+IF b LE a GOTO loop2
 END

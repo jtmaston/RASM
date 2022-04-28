@@ -1,0 +1,14 @@
+NME target
+
+TGT target_1 90.25 90.3 90.124 90.999 120.22 150.42
+TGT target_2 180 45 45 45 90 90
+
+$ counter 0
+
+LABL loop
+ANGS target_1
+ANGS target_2
+ANGS 90 90 90 90 90 90
+ADD counter counter #5
+
+IF counter LE #30 GOTO loop

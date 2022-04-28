@@ -34,3 +34,5 @@
 #define GE 28
 #define G  29
 #define EQ 30
+
+#define TGT 32

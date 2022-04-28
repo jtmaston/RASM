@@ -8,6 +8,7 @@
 #include <vector>
 #include <iterator>
 #include <exception>
+#include <regex>
 
 // TODO: syntax checking
 // TODO: basically everything :)
@@ -44,9 +45,9 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"LE", LE},
         {"L", L},
         {"GE", GE},
-        {"G", G}, 
-        {"EQ", EQ}
-        };
+        {"G", G},
+        {"EQ", EQ},
+        {"TGT", TGT}};
 
 class Word : public std::string
 {
@@ -67,10 +68,14 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    std::vector<variable::Numeric> numeric_space;
-    std::vector<variable::String> string_space;
+    std::vector<variable::Numeric> numeric_space; // holds numeric constants
+    std::vector<variable::String> string_space;   // holds string constants
+    std::vector<variable::Target> target_space;   // holds target constants
 
-    std::ifstream input_file(argv[1]);
+    std::string input_path = std::string(argv[1]);
+    input_path.erase(std::remove(input_path.begin(), input_path.end(), '\\'), input_path.end());
+
+    std::ifstream input_file(input_path);
 
     std::vector<Instruction> instructions;
     std::string output_file_name(argv[1]);
@@ -83,6 +88,7 @@ int main(int argc, char **argv)
 
     std::unordered_map<std::string, int> numeric_hashtable;
     std::unordered_map<std::string, int> goto_hashtable;
+    std::unordered_map<std::string, int> target_hashtable;
 
     bool fail = false;
     int instruction_count = 0;
@@ -91,6 +97,10 @@ int main(int argc, char **argv)
     {
         instruction_count++;
         Instruction local;
+
+        line = line.substr(0, line.find("//"));
+        line = std::regex_replace(line, std::regex("^ +| +$|( ) +"), "$1");
+        line = std::regex_replace(line, std::regex("/  +/g"), " ");
 
         std::istringstream ss(line);
         std::vector<std::string> loc_args((std::istream_iterator<Word>(ss)),
@@ -126,10 +136,10 @@ int main(int argc, char **argv)
                     else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                              << "Use of undeclared variable for comparison. \n";
+                                  << "Use of undeclared variable for comparison. \n";
                         fail = true;
                         continue;
-                    }                    
+                    }
                 }
 
                 if (human_readable_to_opcode.find(loc_args[2]) == human_readable_to_opcode.end())
@@ -152,10 +162,10 @@ int main(int argc, char **argv)
                     else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                              << "Use of undeclared variable for comparison. \n";
+                                  << "Use of undeclared variable for comparison. \n";
                         fail = true;
                         continue;
-                    }                    
+                    }
                 }
 
                 if (loc_args[4] != "GOTO")
@@ -170,9 +180,11 @@ int main(int argc, char **argv)
                 local.params[1] = human_readable_to_opcode.at(loc_args[2]);
                 local.params[2] = numeric_hashtable.at(loc_args[3]);
                 //local.params[3] = std::stoi(loc_args[5]);                   // TODO: verification for this
-                try {
+                try
+                {
                     local.params[3] = goto_hashtable.at(loc_args[5]);
-                }catch(std::exception E)
+                }
+                catch (std::exception E)
                 {
                     std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
                               << "Use of undeclared label " << loc_args[5] << '\n';
@@ -208,9 +220,58 @@ int main(int argc, char **argv)
                 {
                     std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
                               << "Duplicate GOTO label!. \n";
+                    fail = true;
                 }
                 continue;
             }
+            case TGT:
+            {
+                variable::Target v;
+
+                if (target_hashtable.find(loc_args[1]) == target_hashtable.end())
+                {
+                    target_hashtable.insert({loc_args[1], target_hashtable.size()});
+                    v.name = target_hashtable.size() - 1;
+                    target_space.push_back(v);
+                }
+                else
+                {
+                    v = target_space.at(numeric_hashtable.at(loc_args[1]));
+                }
+
+                local.params[0] = v.name;
+
+                for (int i = 1; i <= 5; i++)
+                    local.params[i] = std::stof(loc_args[i + 1]);
+
+                break;
+            }
+
+                /*case TGT:
+            {
+                //std::cout << loc_args.size() << "\n";
+                switch(loc_args.size())
+                {
+                    case 8:
+                    {
+                        std::vector<float> angles = {std::stof(loc_args[2]),
+                            std::stof(loc_args[3]), std::stof(loc_args[4]),
+                            std::stof(loc_args[5]), std::stof(loc_args[6]),
+                            std::stof(loc_args[7])};
+                        
+                        target_hashtable.insert({std::move(loc_args[1]), std::move(angles)});
+                        break;
+                    }
+                    default:
+                    {
+                        std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Not enough parameters to TGT function.\n";
+                        fail = true;
+                        break;
+                    }
+                }
+                break;
+            }*/
 
             case ADD:
             case SUB:
@@ -248,10 +309,10 @@ int main(int argc, char **argv)
                     else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                              << "Use of undeclared variable for input. \n";
+                                  << "Use of undeclared variable for input. \n";
                         fail = true;
                         continue;
-                    }                    
+                    }
                 }
 
                 if (numeric_hashtable.find(loc_args[3]) == numeric_hashtable.end())
@@ -266,10 +327,10 @@ int main(int argc, char **argv)
                     else
                     {
                         std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
-                              << "Use of undeclared variable for input. \n";
+                                  << "Use of undeclared variable for input. \n";
                         fail = true;
                         continue;
-                    }   
+                    }
                 }
 
                 if (!fail)
@@ -299,6 +360,39 @@ int main(int argc, char **argv)
 
                 break;
             }
+
+            case ANGS:
+            {
+                switch (loc_args.size())
+                {
+                case 2:
+
+                    local.params[0] = target_hashtable.at(loc_args[1]);
+                    break;
+
+                case 7:
+                    Instruction constant;
+                    constant.opcode = 32;
+                    target_hashtable.insert({std::string("tgt") + std::to_string(target_hashtable.size()), target_hashtable.size()});
+                    constant.params[0] = target_hashtable.size() - 1;
+                    for (int i = 1; i <= 5; i++)
+                        constant.params[i] = std::stof(loc_args[i]);
+
+                    instructions.push_back(constant);
+                    local.params[0] = target_hashtable.size() - 1;
+
+                    break;
+
+                default:
+                    std::cout << "rasm:\033[1;31m error:\033[0m " << input_name << ": " << instruction_count << ": "
+                              << "Unknown overload of function ANGS ( called with " << loc_args.size() << " parameters )\n";
+                    fail = true;
+                    break;
+                }
+
+                break;
+            }
+
             default:
             {
                 int i = 0;
@@ -345,30 +439,38 @@ int main(int argc, char **argv)
 
         size_t progsize = instructions.size() * sizeof(Instruction);
         size_t numsize = numeric_space.size() * sizeof(variable::Numeric);
+        size_t tgtsize = target_space.size() * sizeof(variable::Target);
         size_t strsize = 0;
 
-        output_file << progsize << " " << numsize << " " << strsize << '\n';
+        //output_file << progsize << " " << numsize << " " << strsize << " " << tgtsize << '\n';
+        //output_file << progsize << " " << numeric_space.size() << " " << target_space.size() << "\n";
+        output_file << progsize << '\n';
 
-        for (auto &str : string_space)
+        /*for (auto &str : string_space)
         {
             strsize += sizeof(variable::String);
             strsize += sizeof(char) * str.size;
-        }
+        }*/
 
         std::cout << "rasm: \033[0;32mDone!\n";
         std::cout << "\033[0;m" << progsize << " bytes used for program.\n";
-        std::cout << numsize << " bytes used for variable space.\n";
-        std::cout << strsize << " bytes used for strings.\n";
+        //std::cout << numsize + tgtsize << " bytes used for variable space.\n";
+        //std::cout << strsize << " bytes used for strings.\n";
 
         for (auto &instr : instructions)
         {
             output_file.write((char *)&instr, sizeof(Instruction));
         }
 
-        for (auto &num : numeric_space)
+        /*for (auto &num : numeric_space)
         {
             output_file.write((char *)&num, sizeof(variable::Numeric));
         }
+        
+        for (auto &tgt : target_space)
+        {
+            output_file.write((char *)&tgt, sizeof(variable::Target));
+        }*/
 
         output_file.close();
     }

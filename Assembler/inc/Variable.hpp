@@ -16,4 +16,11 @@ namespace variable
         char* value;
         uint16_t size;
     };
+
+    struct Target
+    {
+        uint16_t name;
+        float angles[6];
+
+    };
 }
