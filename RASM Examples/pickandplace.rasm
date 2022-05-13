@@ -1,11 +1,32 @@
-NME pickandplace
+NME pickandplace                        // set program name
 
-TGT target_1 0  28.758 33.637 27.6   0
+TGT target_1 0  28.758 33.637 27.6   0  // define targets ( by joint angles )
 TGT target_2 0  32.405 23.815 33.7   0
 TGT target_3 50 32.5   23.8   33.75  0
 TGT target_4 50 21.58  65.650  2.726 0
 TGT target_5  0 21.612 65.607  2.78  0
 TGT target_6 50 28.713 33.7   27.536 0
+TGT home      0  0      0      0     0
 
 
-ANGS target_1
+ANGS target_1                           // go to each target
+ANG 6 55                                // close gripper
+ANGS target_2
+ANGS target_3
+ANGS target_4
+ANG 6 0                                 // open gripper
+
+ANGS target_3
+ANGS target_2
+ANGS target_5
+ANG 6 55
+
+ANGS target_2
+ANGS target_3
+ANGS target_6
+ANG 6 0
+
+ANGS target_3
+ANG 4 -30
+
+ANGS home                               // return to home position

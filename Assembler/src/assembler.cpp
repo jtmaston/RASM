@@ -370,7 +370,7 @@ int main(int argc, char **argv)
                     local.params[0] = target_hashtable.at(loc_args[1]);
                     break;
 
-                case 7:
+                case 6:
                     Instruction constant;
                     constant.opcode = 32;
                     target_hashtable.insert({std::string("tgt") + std::to_string(target_hashtable.size()), target_hashtable.size()});
