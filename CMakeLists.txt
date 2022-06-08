@@ -4,9 +4,11 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_executable(rasm
-    Assembler/src/assembler.cpp
+    src/assembler.cpp
+    inc/QR-Code-generator/cpp/qrcodegen.cpp
 )
 target_include_directories(rasm PRIVATE
-    Assembler/inc
+    inc
+    inc/QR-Code-generator/cpp
 )
-
+target_link_libraries(rasm ${OpenCV_LIBS})

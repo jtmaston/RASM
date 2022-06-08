@@ -9,9 +9,14 @@
 #include <iterator>
 #include <exception>
 #include <regex>
+#include "qrcodegen.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 // TODO: syntax checking
 // TODO: basically everything :)
+#define scaling_factor 32
 
 std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
     {
@@ -33,8 +38,8 @@ std::unordered_map<std::string, uint8_t> human_readable_to_opcode =
         {"IF", IF},
         {"IFN", IFN},
         {"ABR", ABR},
-        {"$", NUMERIC},
-        {"@", STRING},
+        {"$", NUMERIC_VAR},
+        {"@", STRING_VAR},
         {"ADD", ADD},
         {"PRT", PRT},
         {"SUB", SUB},
@@ -61,7 +66,8 @@ std::istream &operator>>(std::istream &is, Word &output)
 
 int main(int argc, char **argv)
 {
-
+    char arg[] = "DISPLAY=:0.0";
+    putenv(arg);
     if (argc == 1)
     {
         std::cout << "rasm:\033[1;31m fatal error:\033[0m no input files \n";
@@ -83,8 +89,9 @@ int main(int argc, char **argv)
     output_file_name = output_file_name.substr(0, dot);
 
     size_t slash = output_file_name.find_last_of("/");
-    std::string progname = output_file_name.substr(slash + 1);
-    std::string input_name = progname + ".rasm";
+    //std::string progname = output_file_name.substr(slash + 1);
+    std::string input_name = output_file_name.substr(slash + 1) + ".rasm";
+    std::string progname;
 
     std::unordered_map<std::string, int> numeric_hashtable;
     std::unordered_map<std::string, int> goto_hashtable;
@@ -193,7 +200,7 @@ int main(int argc, char **argv)
                 break;
             }
 
-            case NUMERIC:
+            case NUMERIC_VAR:
             {
                 variable::Numeric v;
                 if (numeric_hashtable.find(loc_args[1]) == numeric_hashtable.end())
@@ -432,47 +439,54 @@ int main(int argc, char **argv)
 
     if (!fail)
     {
+        output_file_name = output_file_name.substr(0, output_file_name.find_last_of("/")) +"/"+ progname;
+        std::string output_qr = output_file_name;
+        output_qr += ".jpg";
         output_file_name += ".bin";
         std::fstream output_file(output_file_name, std::ios::out | std::ios::binary);
 
         output_file << progname << ' ';
+        uint16_t checksum = 0;
+        for (char const& c: progname)
+        {
+            checksum += c;
+        }
+
+        
 
         size_t progsize = instructions.size() * sizeof(Instruction);
         size_t numsize = numeric_space.size() * sizeof(variable::Numeric);
         size_t tgtsize = target_space.size() * sizeof(variable::Target);
         size_t strsize = 0;
 
-        //output_file << progsize << " " << numsize << " " << strsize << " " << tgtsize << '\n';
-        //output_file << progsize << " " << numeric_space.size() << " " << target_space.size() << "\n";
         output_file << progsize << '\n';
-
-        /*for (auto &str : string_space)
-        {
-            strsize += sizeof(variable::String);
-            strsize += sizeof(char) * str.size;
-        }*/
 
         std::cout << "rasm: \033[0;32mDone!\n";
         std::cout << "\033[0;m" << progsize << " bytes used for program.\n";
-        //std::cout << numsize + tgtsize << " bytes used for variable space.\n";
-        //std::cout << strsize << " bytes used for strings.\n";
 
         for (auto &instr : instructions)
         {
             output_file.write((char *)&instr, sizeof(Instruction));
         }
-
-        /*for (auto &num : numeric_space)
-        {
-            output_file.write((char *)&num, sizeof(variable::Numeric));
-        }
-        
-        for (auto &tgt : target_space)
-        {
-            output_file.write((char *)&tgt, sizeof(variable::Target));
-        }*/
-
         output_file.close();
+
+        qrcodegen::QrCode qr = qrcodegen::QrCode::encodeText((progname + " " + std::to_string(checksum)).c_str(), qrcodegen::QrCode::Ecc::HIGH);
+        
+        cv::Mat matrix(scaling_factor * qr.getSize(), scaling_factor * qr.getSize(), CV_8UC3, cv::Scalar(255, 255, 255));
+        for( uint_fast16_t i = 0 ; i < qr.getSize(); i++ )
+        {
+            for(uint_fast16_t j = 0; j < qr.getSize(); j++)
+            {
+                if ( qr.getModule(i, j) )
+                    cv::rectangle(matrix, cv::Point(i * scaling_factor, j * scaling_factor), cv::Point(i * scaling_factor + scaling_factor, j * scaling_factor + scaling_factor), cv::Scalar(0, 0, 0), cv::FILLED);
+            }
+        }
+        cv::namedWindow("Output");
+        cv::imshow("Output", matrix);
+        cv::imwrite(output_qr, matrix);
+        cv::waitKey(0);
+        //cv::destroyWindow("Program output");
+
     }
     return 0;
 }

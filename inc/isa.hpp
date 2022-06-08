@@ -1,5 +1,8 @@
 #pragma once
 
+namespace ISA
+{
+
 #define ANG 0
 #define ANGS 1
 #define DEL 2
@@ -19,20 +22,21 @@
 #define IFN 15
 #define ABR 16
 
-#define NUMERIC 17
-#define STRING  18
-#define ADD     19
-#define PRT     20
-#define SUB     21
-#define DIV     22
-#define FDIV    23
-#define SQRT    24
-#define TRNC    25
+#define NUMERIC_VAR 17
+#define STRING_VAR 18
+#define ADD 19
+#define PRT 20
+#define SUB 21
+#define DIV 22
+#define FDIV 23
+#define SQRT 24
+#define TRNC 25
 
 #define LE 26
-#define L  27
+#define L 27
 #define GE 28
-#define G  29
+#define G 29
 #define EQ 30
 
 #define TGT 32
+}
