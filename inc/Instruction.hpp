@@ -4,5 +4,10 @@
 
 struct Instruction{
     uint8_t opcode;
-    float params[10];
+    std::vector<float> params;
+
+    Instruction()
+    {
+        params.resize(10);
+    }
 };

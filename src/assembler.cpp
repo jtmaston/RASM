@@ -370,6 +370,7 @@ int main(int argc, char **argv)
 
             case ANGS:
             {
+                Instruction constant;
                 switch (loc_args.size())
                 {
                 case 2:
@@ -378,7 +379,7 @@ int main(int argc, char **argv)
                     break;
 
                 case 6:
-                    Instruction constant;
+                    
                     constant.opcode = 32;
                     target_hashtable.insert({std::string("tgt") + std::to_string(target_hashtable.size()), target_hashtable.size()});
                     constant.params[0] = target_hashtable.size() - 1;
