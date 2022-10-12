@@ -9,7 +9,7 @@ TGT target_6 50 28.713 33.7   27.536 0
 TGT home      0  0      0      0     0
 
 
-ANGS target_1                           // go to each target
+ANGS target_1                           // go to each target_
 ANG 6 55                                // close gripper
 ANGS target_2
 ANGS target_3
@@ -29,4 +29,4 @@ ANG 6 0
 ANGS target_3
 ANG 4 -30
 
-ANGS home                               // return to home position
+ANGS home                               // return to home position_

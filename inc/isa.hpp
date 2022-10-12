@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ISA
+namespace Isa
 {
 
 #define ANG 0

@@ -1,13 +1,22 @@
 # RASM
+
 A Pseudo-Programming language designed to automate robots running my [ yet to be named ] framework
 
 # General description
-RASM ( very loosely ) follows the model of G-Code, following a syntax that can generally be summarized as [ OPCODE ARG1 ARG2 ARG3 ARG 4 ]. The name comes from a mash-up between Robot and Assembly. This is not designed to be any standard, nor replay any other standard, but rather as a quick and easy research project.
+
+RASM ( very loosely ) follows the model of G-Code, following a syntax that can generally be summarized
+as [ OPCODE ARG1 ARG2 ARG3 ARG 4 ]. The name comes from a mash-up between Robot and Assembly. This is not designed to be
+any standard, nor replay any other standard, but rather as a quick and easy research project.
 
 # OPCODES
- This section summarizes the opcodes used, and how to use them. As more are implemented, this list will expand. So far, the main target is the DOFBot platform, the code will therefore be prioritizing instructions for a 5-DOF articulated arm.
- Parameters marked with [ ] are optional.
+
+This section summarizes the opcodes used, and how to use them. As more are implemented, this list will expand. So far,
+the main target_ is the DOFBot platform, the code will therefore be prioritizing instructions for a 5-DOF articulated
+arm.
+Parameters marked with [ ] are optional.
+
 ## List of opcodes:
+
     * ANG param [ time ]
         - Opcode 0, accepts 2 parameters
         - Sets single servo to specified angle
@@ -28,9 +37,9 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Defines a "global" speed to be used when the time
         parameter is left unfilled for the angles
     * GHME
-        - Go home, returns robot to the home position
+        - Go home, returns robot to the home position_
     * SHME [ param1 ], [ param2 ], [ param3 ], ... [ param6 ]
-        - Set the robot's home to current position
+        - Set the robot's home to current position_
         - Alternatively, if *ALL* of the params are filled in with
         valid values, home is set to them.
     * INC param1 param2
@@ -57,18 +66,21 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Abort, cuts power to the servos
 
 # Variables
+
 I plan to also have support for variables, though this may be a bit more complex
+
 ## Variable Opcodes
+
     * $ param1 param2
-        - declare a variable of name param1 with numeric value param2
-        - NOTE: please note the space between $ and the variable name
+        - declare a Variable of name param1 with numeric value param2
+        - NOTE: please note the space between $ and the Variable name
     
     * #param1
-        - use plain numeric value, without explicitly assigning a variable
+        - use plain numeric value, without explicitly assigning a Variable
         - note THE LACK of space between # and the value
 
     * @ param1 param2
-        - declare variable of the name param1 with string value param2
+        - declare Variable of the name param1 with string value param2
         - NOTE: strings are declared read-only
     * PRT param1
         - print param1 to the debug console
@@ -86,47 +98,49 @@ I plan to also have support for variables, though this may be a bit more complex
         - discards decimals of param1
 
 # Implementation progress
+
 ## Main opcodes
 
-| OPCODE | Assembler support |   Interpreter support  |
-|--------|-------------------|------------------------|
-|ANG     |        [ x ]      |          [ x ]         |
-|ANGS    |        [ x ]      |          [ x ]         |
-|DEL     |        [ x ]      |          [ x ]         |
-|OFS     |        [ x ]      |          [ ]           |
-|NME     |        [ x ]      |          [ x ]         |
-|SPD     |        [ x ]      |          [ x ]         |
-|GHME    |        [ x ]      |          [ x ]         |
-|SHME    |        [ x ]      |          [ ]           |
-|INC     |        [ x ]      |          [ x ]         |
-|DEC     |        [ x ]      |          [ x ]         |
-|RPP     |        [ ]        |          [ ]           |
-|IPP     |        [ ]        |          [ ]           |
-|END     |        [ x ]      |          [ ]           |
-|GOTO    |        [ x ]      |          [ x ]         |
-|IF      |        [ ]        |          [ ]           |
-|IFN     |        [ ]        |          [ ]           |
-|ABR     |        [ ]        |          [ ]           |
+| OPCODE | Assembler support | Interpreter support |
+|--------|-------------------|---------------------|
+| ANG    | [ x ]             | [ x ]               |
+| ANGS   | [ x ]             | [ x ]               |
+| DEL    | [ x ]             | [ x ]               |
+| OFS    | [ x ]             | [ ]                 |
+| NME    | [ x ]             | [ x ]               |
+| SPD    | [ x ]             | [ x ]               |
+| GHME   | [ x ]             | [ x ]               |
+| SHME   | [ x ]             | [ ]                 |
+| INC    | [ x ]             | [ x ]               |
+| DEC    | [ x ]             | [ x ]               |
+| RPP    | [ ]               | [ ]                 |
+| IPP    | [ ]               | [ ]                 |
+| END    | [ x ]             | [ ]                 |
+| GOTO   | [ x ]             | [ x ]               |
+| IF     | [ ]               | [ ]                 |
+| IFN    | [ ]               | [ ]                 |
+| ABR    | [ ]               | [ ]                 |
 
 ## Logic
 
 | OPCODE | Assembler support | Interpreter support |
 |--------|-------------------|---------------------|
-|LE      |        [ ]        |         [ ]         |
-|L       |        [ ]        |         [ ]         |
-|GE      |        [ ]        |         [ ]         |
-|G       |        [ ]        |         [ ]         |
-|EQ      |        [ ]        |         [ ]         |
+| LE     | [ ]               | [ ]                 |
+| L      | [ ]               | [ ]                 |
+| GE     | [ ]               | [ ]                 |
+| G      | [ ]               | [ ]                 |
+| EQ     | [ ]               | [ ]                 |
 
 ## Variables
+
 | OPCODE | Assembler support | Interpreter support |
 |--------|-------------------|---------------------|
-| #      |        [ x ]        |         [ x ]         |
-| @      |        [ ]          |         [ ]           |
-| PRT    |        [ x ]        |         [ x ]         |
-| ADD    |        [ x ]        |         [ x ]         |
-| SUB    |        [ x ]        |         [ x ]         |
-| DIV    |        [ x ]        |         [ x ]         |
-| FDIV   |        [ x ]        |         [ x ]         |
-| SQRT   |        [ x ]        |         [ x ]         |
-| TRNC   |        [ x ]        |         [ x ]         |
+| #      | [ x ]             | [ x ]               |
+| @      | [ ]               | [ ]                 |
+| PRT    | [ x ]             | [ x ]               |
+| ADD    | [ x ]             | [ x ]               |
+| SUB    | [ x ]             | [ x ]               |
+| DIV    | [ x ]             | [ x ]               |
+| FDIV   | [ x ]             | [ x ]               |
+| SQRT   | [ x ]             | [ x ]               |
+| TRNC   | [ x ]             | [ x ]               |

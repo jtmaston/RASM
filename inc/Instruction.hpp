@@ -1,5 +1,5 @@
-#pragma once
-#include <stdint.h>
+//#pragma once
+#include <cstdint>
 #include <vector>
 
 struct Instruction{
@@ -9,5 +9,6 @@ struct Instruction{
     Instruction()
     {
         params.resize(10);
+        opcode = 0;
     }
 };
