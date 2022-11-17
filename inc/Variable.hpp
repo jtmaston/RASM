@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace variable
 {
@@ -20,7 +21,7 @@ namespace variable
     struct Target
     {
         uint16_t name;
-        float angles[6];
+        std::vector<float> angles[6];
 
     };
 }
