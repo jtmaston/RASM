@@ -21,7 +21,7 @@ namespace variable
     struct Target
     {
         uint16_t name;
-        std::vector<float> angles[6];
+        std::vector<double> angles;
 
     };
 }

@@ -67,7 +67,7 @@ std::istream &operator>>(std::istream &is, Word &output)
 int main(int argc, char **argv)
 {
     char arg[] = "DISPLAY=:0.0";
-    putenv(arg);
+    //putenv(arg);
     if (argc == 1)
     {
         std::cout << "rasm:\033[1;31m fatal error:\033[0m no input files \n";
@@ -444,7 +444,8 @@ int main(int argc, char **argv)
         std::string output_qr = output_file_name;
         output_qr += ".jpg";
         output_file_name += ".bin";
-        std::fstream output_file(output_file_name, std::ios::out | std::ios::binary);
+        //std::fstream output_file(output_file_name, std::ios::out | std::ios::binary);
+        std::fstream output_file(output_file_name, std::ios::out);
 
         output_file << progname << ' ';
         uint16_t checksum = 0;
@@ -467,7 +468,11 @@ int main(int argc, char **argv)
 
         for (auto &instr : instructions)
         {
-            output_file.write((char *)&instr, sizeof(Instruction));
+            //output_file.write((char *)&instr, sizeof(Instruction));
+            output_file << (int)instr.opcode << " ";
+            for(int i = 0 ; i < 10;i++)
+                output_file << instr.params.at(i) << " ";
+            output_file << '\n';
         }
         output_file.close();
 
