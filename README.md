@@ -13,8 +13,8 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Sets single servo to specified angle
     * ANGS `param1 [ param2 ] [ param3 ] [ param4 ] [ param5 ] 
     [ param6 ] [ time ]`
-        - Opcode 1, accepts 1 to 6 parameters for angles and 1 for time
-        - Sets a number of servos to the specified angles
+        - Opcode 1, accepts 1 to 6 parameters for angles_ and 1 for time
+        - Sets a number of servos to the specified angles_
         - Note: setting an angle to "null" tells the robot it should
         not change its value
     * DEL param
@@ -26,11 +26,11 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
         - Sets a name for the program
     * SPD param
         - Defines a "global" speed to be used when the time
-        parameter is left unfilled for the angles
+        parameter is left unfilled for the angles_
     * GHME
-        - Go home, returns robot to the home position
+        - Go home, returns robot to the home position_
     * SHME [ param1 ], [ param2 ], [ param3 ], ... [ param6 ]
-        - Set the robot's home to current position
+        - Set the robot's home to current position_
         - Alternatively, if *ALL* of the params are filled in with
         valid values, home is set to them.
     * INC param1 param2

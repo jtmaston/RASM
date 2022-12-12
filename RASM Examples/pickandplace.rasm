@@ -1,6 +1,6 @@
 NME pickandplace                        // set program name
 
-TGT target_1 0  28.758 33.637 27.6   0  // define targets ( by joint angles )
+TGT target_1 0  28.758 33.637 27.6   0  // define targets ( by joint angles_ )
 TGT target_2 0  32.405 23.815 33.7   0
 TGT target_3 50 32.5   23.8   33.75  0
 TGT target_4 50 21.58  65.650  2.726 0
@@ -29,4 +29,4 @@ ANG 6 0
 ANGS target_3
 ANG 4 -30
 
-ANGS home                               // return to home position
+ANGS home                               // return to home position_

@@ -261,12 +261,12 @@ int main(int argc, char **argv)
                 {
                     case 8:
                     {
-                        std::vector<float> angles = {std::stof(loc_args[2]),
+                        std::vector<float> angles_ = {std::stof(loc_args[2]),
                             std::stof(loc_args[3]), std::stof(loc_args[4]),
                             std::stof(loc_args[5]), std::stof(loc_args[6]),
                             std::stof(loc_args[7])};
                         
-                        target_hashtable.insert({std::move(loc_args[1]), std::move(angles)});
+                        target_hashtable.insert({std::move(loc_args[1]), std::move(angles_)});
                         break;
                     }
                     default:
