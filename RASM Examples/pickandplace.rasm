@@ -1,4 +1,4 @@
-NME pickandplace                        // set program name
+NME pickandplace                        // set initializeInterpreterThread name
 
 TGT target_1 0  28.758 33.637 27.6   0  // define targets ( by joint angles_ )
 TGT target_2 0  32.405 23.815 33.7   0

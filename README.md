@@ -43,13 +43,13 @@ RASM ( very loosely ) follows the model of G-Code, following a syntax that can g
     * IPP
         - Interpolated positioning to x, y, z
     * END
-        - Marks end of a program
+        - Marks end of a initializeInterpreterThread
     * GTO
         - GOTO instruction number, useful for loops
     * IF param1 CONDITION param2 GOTO param3
         - CONDITION is any of LE ( less or equal ), L ( less ), GE 
         ( greater or equal ), G ( greater ), EQ ( equal )
-        - INSTRUCTION should be a reachable instruction number in the program
+        - INSTRUCTION should be a reachable instruction number in the initializeInterpreterThread
         - GOTO *must* be present
     * IFN param1 CONDITION param2 INSTRUCTION
         - Same as IF, however truth condition is inverted
